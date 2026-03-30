@@ -88,7 +88,7 @@ public class CoinCommand implements CommandExecutor {
         DatabaseManager.PlayerData playerData = database.getOrCreatePlayer(player.getUniqueId(), player.getName());
 
         if (playerData != null) {
-            CoinsGUI.openCoinsGUI(player, playerData.getCoins(), playerData.getLastLogin());
+            CoinsGUI.openCoinsGUI(player, playerData.getCoins(), playerData.getLastLogin(), playerData.getJoinDate());
         } else {
             player.sendMessage("§c❌ Erro ao carregar suas informações!");
         }

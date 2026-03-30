@@ -32,39 +32,46 @@ public class GUIListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         String title = event.getView().getTitle();
 
-        // GUI de FulldevCoins
-        if (title.equals("§6FulldevCoins")) {
+        // GUI de FulldevCoins (Minimalista)
+        if (title.equals("§6★ Meu Saldo ★")) {
             event.setCancelled(true);
 
             int slot = event.getRawSlot();
 
-            // Botão de loja (slot 29)
-            if (slot == 29) {
+            // Botão de loja (slot 18)
+            if (slot == 18) {
                 shopManager.openShop(player);
             }
 
-            // Botão de Discord (slot 33)
-            else if (slot == 33) {
+            // Botão de Discord (slot 20)
+            else if (slot == 20) {
                 String discordLink = plugin.getConfig().getString("links.discord", "https://discord.gg/seu-servidor");
                 player.sendMessage("§5Discord: §7" + discordLink);
             }
 
-            // Botão de Website (slot 37)
-            else if (slot == 37) {
-                String website = plugin.getConfig().getString("links.website", "https://seu-website.com");
-                player.sendMessage("§bWebsite: §7" + website);
-            }
-
-            // Botão de fechar (slot 44)
-            else if (slot == 44) {
-                player.closeInventory();
-            }
-
-            // Cabeça do player (slot 22) - atualizar
+            // Botão de Website (slot 22)
             else if (slot == 22) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
+                String website = plugin.getConfig().getString("links.website", "https://seu-website.com");
+                player.sendMessage(" ");
+                player.sendMessage("§9§l【 WEBSITE 】");
+                player.sendMessage("§7Clique para copiar: §a" + website);
+                player.sendMessage(" ");
+            }
+
+            // Botão de Fechar (slot 24)
+            else if (slot == 24) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+                player.closeInventory();
+                player.sendMessage("§7Você fechou o menu de coins.");
+            }
+
+            // Cabeça do player (slot 9) - atualizar GUI
+            else if (slot == 9) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
                 DatabaseManager.PlayerData playerData = database.getOrCreatePlayer(player.getUniqueId(), player.getName());
                 if (playerData != null) {
-                    CoinsGUI.openCoinsGUI(player, playerData.getCoins(), playerData.getLastLogin());
+                    CoinsGUI.openCoinsGUI(player, playerData.getCoins(), playerData.getLastLogin(), playerData.getJoinDate());
                 }
             }
         }
