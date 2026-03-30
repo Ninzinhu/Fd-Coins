@@ -1,0 +1,39 @@
+# Configuração do Plugin FulldevCoins
+# Este arquivo define como as moedas serão dropadas
+
+# Intervalo de tempo em segundos entre drops de moedas
+# Cada mob terá uma chance de dropar moedas a cada esse intervalo de tempo
+drop-interval-seconds: 5
+
+# Quantidade mínima de moedas a dropar
+min-coins: 1
+
+# Quantidade máxima de moedas a dropar
+max-coins: 5
+
+# Chance de dropar moedas (0.0 a 1.0, onde 1.0 é 100%)
+drop-chance: 0.5
+
+# Habilitar/desabilitar o plugin
+enabled: true
+
+# Mensagem exibida no chat quando um player recebe uma moeda
+# Use %player% para o nome do player
+# Use %amount% para a quantidade de moedas
+message: "[Fulldev] Você recebeu %amount% moeda(s)!"
+
+# Mobs que podem dropar moedas
+# Deixe vazio para todos os mobs
+allowed-mobs:
+  - ZOMBIE
+  - CREEPER
+  - SKELETON
+  - SPIDER
+  - ENDERMAN
+  - BLAZE
+  - WITCH
+  - WITHER_SKELETON
+  - HUSK
+  - DROWNED
+  - PHANTOM
+  - ZOGLIN

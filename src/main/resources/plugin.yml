@@ -1,0 +1,16 @@
+name: FulldevCoins
+version: 1.0
+description: Plugin para dropar moedas ao matar mobs
+author: Konpeki Studios
+main: org.konpeki_estudios.FulldevCoinsPlugin
+
+permissions:
+  fulldevcoins.admin:
+    description: Permissão para usar comandos do FulldevCoins
+    default: op
+
+commands:
+  fulldevcoins:
+    description: Comando para gerenciar o plugin FulldevCoins
+    usage: /fulldevcoins <reload|info>
+    aliases: [coins]
