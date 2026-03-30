@@ -2,10 +2,12 @@ package org.konpeki_estudios.database;
 
 import java.sql.*;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class DatabaseManager {
     private Connection connection;
     private String databasePath;
+    private static final Logger logger = Logger.getLogger("FulldevCoins");
 
     public DatabaseManager(String databasePath) {
         this.databasePath = databasePath;
@@ -19,9 +21,9 @@ public class DatabaseManager {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + databasePath);
             createTables();
-            System.out.println("✅ Conectado ao banco de dados SQLite");
+            logger.info("✅ Conectado ao banco de dados SQLite");
         } catch (ClassNotFoundException | SQLException e) {
-            System.err.println("❌ Erro ao conectar ao banco de dados: " + e.getMessage());
+            logger.severe("❌ Erro ao conectar ao banco de dados: " + e.getMessage());
         }
     }
 
@@ -97,7 +99,7 @@ public class DatabaseManager {
             return new PlayerData(uuid, name, 0, System.currentTimeMillis(), 0, 1);
 
         } catch (SQLException e) {
-            System.err.println("❌ Erro ao obter/criar player: " + e.getMessage());
+            logger.severe("❌ Erro ao obter/criar player: " + e.getMessage());
             return null;
         }
     }
@@ -119,7 +121,7 @@ public class DatabaseManager {
             recordTransaction(uuid, "EARN", amount, reason);
 
         } catch (SQLException e) {
-            System.err.println("❌ Erro ao adicionar coins: " + e.getMessage());
+            logger.severe("❌ Erro ao adicionar coins: " + e.getMessage());
         }
     }
 
@@ -147,7 +149,7 @@ public class DatabaseManager {
             return true;
 
         } catch (SQLException e) {
-            System.err.println("❌ Erro ao remover coins: " + e.getMessage());
+            logger.severe("❌ Erro ao remover coins: " + e.getMessage());
             return false;
         }
     }
@@ -167,7 +169,7 @@ public class DatabaseManager {
                 pstmt.executeUpdate();
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erro ao registrar transação: " + e.getMessage());
+            logger.severe("❌ Erro ao registrar transação: " + e.getMessage());
         }
     }
 
@@ -183,7 +185,7 @@ public class DatabaseManager {
                 pstmt.executeUpdate();
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erro ao atualizar último login: " + e.getMessage());
+            logger.severe("❌ Erro ao atualizar último login: " + e.getMessage());
         }
     }
 
@@ -202,7 +204,7 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erro ao obter coins: " + e.getMessage());
+            logger.severe("❌ Erro ao obter coins: " + e.getMessage());
         }
         return 0;
     }
@@ -214,10 +216,10 @@ public class DatabaseManager {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                System.out.println("✅ Desconectado do banco de dados");
+                logger.info("✅ Desconectado do banco de dados");
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erro ao desconectar: " + e.getMessage());
+            logger.severe("❌ Erro ao desconectar: " + e.getMessage());
         }
     }
 

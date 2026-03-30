@@ -1,19 +1,297 @@
-# 🎮 FulldevCoins - Plugin Spigot
+# 🎮 FulldevCoins - Plugin Spigot Completo
 
-Um plugin Spigot/Bukkit para Minecraft que faz mobs droparem moedas personalizadas com sistema de CI/CD automático.
+Um plugin Spigot/Bukkit para Minecraft que faz mobs droparem moedas personalizadas com sistema de banco de dados, GUI bonita, loja integrada e muito mais!
 
-## 📋 Características
+## 📋 Características Principais
 
+### 💰 Sistema de Coins
 - ✅ Mobs dropam moedas ao serem mortos por players
-- ✅ Quantidade de moedas configurável (mín e máx)
-- ✅ Chance de drop configurável (0.0 a 1.0)
-- ✅ Lista de mobs permitidos customizável
-- ✅ Mensagens personalizadas no chat
-- ✅ Sistema de comandos (`/fulldevcoins`)
-- ✅ Sistema de permissões integrado
-- ✅ CI/CD automático com GitHub Actions
-- ✅ Versionamento semântico automático
-- ✅ Releases automáticas no GitHub
+- ✅ Drop automático a cada 15 minutos (configurável)
+- ✅ Armazenamento de coins em banco de dados SQLite
+- ✅ Histórico de transações
+- ✅ Sistema de levels e boosters
+
+### 🎨 Interface Gráfica
+- ✅ GUI bonita ao digitar `/coins`
+- ✅ Cabeça do player como ícone principal
+- ✅ Informações de último login e quantidade de coins
+- ✅ Botões para Discord, Website e Loja
+- ✅ Design limpo com cores e vidro decorativo
+
+### 🏪 Loja de Coins
+- ✅ Compra de itens com coins
+- ✅ Diamante (50 coins)
+- ✅ Esmeralda (40 coins)
+- ✅ Barra de Ouro x5 (30 coins)
+- ✅ Barra de Ferro x10 (20 coins)
+- ✅ Itens customizáveis via config
+
+### 💾 Banco de Dados
+- ✅ SQLite integrado (padrão)
+- ✅ Suporte a MySQL (opcional)
+- ✅ Armazenamento seguro de dados
+- ✅ Histórico de transações
+- ✅ Sincronização automática
+
+### 🔧 Sistema de Recompensas
+- ✅ Recompensas automáticas a cada 15 minutos
+- ✅ Drop de 1 coin automático (configurável)
+- ✅ Milestones e notificações
+- ✅ Sistema de eventos
+
+## 🚀 Quick Start
+
+### Instalação Rápida
+
+1. **Compile o projeto:**
+```bash
+mvn clean package
+```
+
+2. **Copie o JAR para seu servidor Spigot:**
+```bash
+cp target/Fulldev-coins-1.0-SNAPSHOT.jar /caminho/para/plugins/
+```
+
+3. **Reinicie o servidor:**
+```bash
+# O arquivo config.yml será gerado automaticamente em:
+# plugins/FulldevCoins/config.yml
+```
+
+### Via Scripts de Build
+
+**Windows:**
+```bash
+build.bat
+```
+
+**Linux/Mac:**
+```bash
+./build.sh
+```
+
+## 💬 Comandos
+
+### `/coins`
+Abre a GUI principal com informações do player
+
+### `/coins info`
+Mostra informações detalhadas:
+- Moedas atuais
+- Total ganho
+- Level
+- Último login
+
+### `/coins loja` ou `/coins shop`
+Abre a loja de coins
+
+### `/coins help`
+Mostra ajuda de comandos
+
+### `/coins reload` (Admin)
+Recarrega a configuração sem reiniciar
+
+## ⚙️ Configuração
+
+### Arquivo config.yml
+
+```yaml
+# SISTEMA DE DROP
+coins-drop:
+  interval-minutes: 15          # Drop automático a cada 15 minutos
+  coins-per-drop: 1             # Quantidade por drop automático
+  
+  mob-drop:
+    enabled: true
+    chance: 0.5                 # 50% de chance
+    min-coins: 1
+    max-coins: 5
+    allowed-mobs:
+      - ZOMBIE
+      - CREEPER
+      # ... mais mobs
+
+# BANCO DE DADOS
+database:
+  type: sqlite                  # sqlite ou mysql
+  sqlite:
+    filename: "fulldev-coins.db"
+
+# LOJA
+shop:
+  enabled: true
+  items:
+    diamond:
+      id: "DIAMOND"
+      quantity: 1
+      price: 50
+```
+
+## 🎨 Personalizações
+
+### Mudar Item das Moedas
+
+Edite `CoinsGUI.java` ou `MobDeathListener.java`:
+
+```java
+private ItemStack createCoinItem(int amount) {
+    ItemStack coin = new ItemStack(Material.GOLD_NUGGET, amount);
+    // Trocar GOLD_NUGGET por: DIAMOND, EMERALD, etc
+```
+
+### Adicionar Novos Itens na Loja
+
+Edite `ShopManager.java` e adicione itens no método `openShop()`:
+
+```java
+// Item 5: Novo Item
+shop.setItem(22, createShopItem(Material.AMETHYST_SHARD, "§dAmetista", 
+    new String[]{"§7Preço: §645 moedas", "", "§eClique para comprar!"}));
+```
+
+### Customizar Mensagens
+
+Edite `config.yml`:
+
+```yaml
+messages:
+  coins-received: "§a[§6Fulldev§a] +§e%amount%§a moedas! Total: §6%total%"
+  auto-reward: "§a[Fulldev] Você recebeu §e1 moeda§a automática!"
+```
+
+## 🗄️ Estrutura de Banco de Dados
+
+### Tabela: players
+```sql
+uuid          TEXT PRIMARY KEY
+name          TEXT
+coins         LONG (moedas atuais)
+last_login    LONG (timestamp)
+total_coins_earned LONG
+level         INT
+created_at    LONG (timestamp)
+booster_multiplier DOUBLE
+booster_until LONG (timestamp)
+```
+
+### Tabela: transactions
+```sql
+id            INTEGER PRIMARY KEY
+player_uuid   TEXT
+type          TEXT (EARN, SPEND, BOOSTER, BONUS)
+amount        LONG
+reason        TEXT
+timestamp     LONG
+```
+
+## 🎯 Funcionalidades Extras Implementadas
+
+- ✅ **Cabeça customizada do player** como ícone na GUI
+- ✅ **Formatação de números** com separador de milhares
+- ✅ **Data formatada** de último login
+- ✅ **Sistema de transações** para auditoria
+- ✅ **Suporte a MySQL** além de SQLite
+- ✅ **Sistema de levels** com recompensas
+- ✅ **Booster de multiplicação** de coins
+- ✅ **Sistema de milestones** com notificações
+- ✅ **Links customizáveis** para Discord/Website
+- ✅ **Permissões granulares** para comandos
+
+## 📁 Estrutura do Projeto
+
+```
+src/main/java/org/konpeki-estudios/
+├── FulldevCoinsPlugin.java        (Classe principal)
+├── CoinCommand.java                (Comandos)
+├── MobDeathListener.java            (Drop ao matar mobs)
+├── GUIListener.java                 (Gerencia cliques na GUI)
+├── database/
+│   └── DatabaseManager.java         (Gerenciamento de DB)
+├── gui/
+│   └── CoinsGUI.java                (Interface gráfica)
+├── shop/
+│   └── ShopManager.java             (Gerenciador de loja)
+└── system/
+    └── AutoRewardManager.java       (Recompensas automáticas)
+```
+
+## ❓ Troubleshooting
+
+### "Plugin failed to load"
+- ✅ Verificar se está usando Java 21+
+- ✅ Verificar se é Spigot 1.20.4+
+- ✅ Ver log em `logs/latest.log`
+
+### Moedas não estão aparecendo
+- ✅ Verificar se mob está em `allowed-mobs`
+- ✅ Verificar se `enabled: true`
+- ✅ Usar `/coins reload`
+
+### Banco de dados não conecta
+- ✅ Verificar permissões da pasta `plugins/FulldevCoins/`
+- ✅ Verificar se SQLite está disponível
+- ✅ Para MySQL: verificar credenciais em config.yml
+
+## 📊 Stack Técnico
+
+- **Linguagem:** Java 21
+- **Build Tool:** Maven
+- **Framework:** Spigot API 1.20.4
+- **Database:** SQLite/MySQL
+- **CI/CD:** GitHub Actions
+- **Versionamento:** Semântico
+
+## 🎯 Próximas Ideias
+
+- [ ] Sistema de Daily Quests
+- [ ] Leaderboard de top players
+- [ ] Integração com economia (Vault)
+- [ ] Diferentes raridades de coins
+- [ ] Animações de GUI
+- [ ] Sistema de presentes entre players
+- [ ] Evento especial com drop aumentado
+- [ ] Sistema de battle pass
+
+## 📝 Versioning
+
+O projeto usa **Semantic Versioning** automático:
+
+```
+MAJOR.MINOR.PATCH
+  ↑      ↑      ↑
+  |      |      └─ Incrementa em develop (bugfixes)
+  |      └─────── Incrementa em main (features)
+  └───────────── Incrementa manualmente (breaking changes)
+```
+
+## 🚀 Deploy em Produção
+
+1. **Compile:** `mvn clean package`
+2. **Teste localmente**
+3. **Push para main:** Triggers release automática
+4. **Download de releases:** GitHub → Releases
+5. **Instale em servidor:** Copie JAR para plugins/
+6. **Configure:** Edite config.yml conforme necessário
+
+## 📞 Suporte
+
+1. **Dúvidas sobre instalação?** → Veja seção "Quick Start"
+2. **Erros de compilação?** → Veja "Troubleshooting"
+3. **Quer customizar?** → Veja "Personalizações"
+4. **Problemas com BD?** → Verifique "Banco de Dados"
+
+## 🎉 Conclusão
+
+Você tem um plugin Spigot **profissional, completo e pronto para produção**!
+
+**Pronto para usar. Aproveite! 🎮**
+
+---
+
+**Desenvolvido com ❤️ por Konpeki Studios**
+
+Versão: 1.0-SNAPSHOT | Status: ✅ Pronto para Produção | Data: 2026-03-29
 
 ## 🚀 Quick Start
 
