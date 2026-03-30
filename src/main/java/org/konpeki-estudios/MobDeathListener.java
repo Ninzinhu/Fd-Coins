@@ -9,15 +9,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
+import org.konpeki_estudios.database.DatabaseManager;
+import org.konpeki_estudios.gui.CoinsGUI;
+
 import java.util.Random;
 
 public class MobDeathListener implements Listener {
 
     private final FulldevCoinsPlugin plugin;
+    private final DatabaseManager database;
     private final Random random = new Random();
 
-    public MobDeathListener(FulldevCoinsPlugin plugin) {
+    public MobDeathListener(FulldevCoinsPlugin plugin, DatabaseManager database) {
         this.plugin = plugin;
+        this.database = database;
     }
 
     @EventHandler
@@ -35,29 +40,38 @@ public class MobDeathListener implements Listener {
             return;
         }
 
+        // Verificar se o drop de mobs está habilitado
+        if (!plugin.getConfig().getBoolean("coins-drop.mob-drop.enabled", true)) {
+            return;
+        }
+
         // Verificar se o mob está na lista de permitidos
         if (!isAllowedMob(entity.getType().name())) {
             return;
         }
 
         // Verificar chance de dropar
-        double dropChance = plugin.getConfig().getDouble("drop-chance", 0.5);
+        double dropChance = plugin.getConfig().getDouble("coins-drop.mob-drop.chance", 0.5);
         if (random.nextDouble() > dropChance) {
             return;
         }
 
         // Calcular quantidade de moedas
-        int minCoins = plugin.getConfig().getInt("min-coins", 1);
-        int maxCoins = plugin.getConfig().getInt("max-coins", 5);
+        int minCoins = plugin.getConfig().getInt("coins-drop.mob-drop.min-coins", 1);
+        int maxCoins = plugin.getConfig().getInt("coins-drop.mob-drop.max-coins", 5);
         int amount = minCoins + random.nextInt(maxCoins - minCoins + 1);
+
+        // Adicionar coins ao banco de dados
+        database.addCoins(killer.getUniqueId(), amount, "Matou mob: " + entity.getType().name());
 
         // Dropar a moeda
         dropCoin(killer, entity, amount);
 
         // Enviar mensagem no chat
-        String message = plugin.getConfig().getString("message", "[Fulldev] Você recebeu %amount% moeda(s)!");
-        message = message.replace("%player%", killer.getName());
+        String message = plugin.getConfig().getString("messages.coins-received",
+            "§a[§6Fulldev§a] +§e%amount%§a moeda(s)! Total: §6%total%");
         message = message.replace("%amount%", String.valueOf(amount));
+        message = message.replace("%total%", String.valueOf(database.getCoins(killer.getUniqueId())));
         killer.sendMessage(message);
     }
 
@@ -65,7 +79,7 @@ public class MobDeathListener implements Listener {
      * Verifica se o mob está na lista de permitidos
      */
     private boolean isAllowedMob(String mobType) {
-        java.util.List<String> allowedMobs = plugin.getConfig().getStringList("allowed-mobs");
+        java.util.List<String> allowedMobs = plugin.getConfig().getStringList("coins-drop.mob-drop.allowed-mobs");
 
         // Se a lista está vazia, permite todos
         if (allowedMobs.isEmpty()) {
@@ -79,7 +93,7 @@ public class MobDeathListener implements Listener {
      * Dropa a moeda para o player
      */
     private void dropCoin(Player player, LivingEntity mob, int amount) {
-        // Criar um item de moeda (usando GOLD_INGOT como representação)
+        // Criar um item de moeda (usando GOLD_NUGGET como representação)
         ItemStack coin = createCoinItem(amount);
 
         // Dropar a moeda no local onde o mob morreu

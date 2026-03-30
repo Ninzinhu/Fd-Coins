@@ -1,39 +1,204 @@
-# Configuração do Plugin FulldevCoins
-# Este arquivo define como as moedas serão dropadas
+# ============================================================
+# FulldevCoins - Configuração Completa
+# ============================================================
 
-# Intervalo de tempo em segundos entre drops de moedas
-# Cada mob terá uma chance de dropar moedas a cada esse intervalo de tempo
-drop-interval-seconds: 5
-
-# Quantidade mínima de moedas a dropar
-min-coins: 1
-
-# Quantidade máxima de moedas a dropar
-max-coins: 5
-
-# Chance de dropar moedas (0.0 a 1.0, onde 1.0 é 100%)
-drop-chance: 0.5
-
-# Habilitar/desabilitar o plugin
+# GERAL
 enabled: true
+debug: false
 
-# Mensagem exibida no chat quando um player recebe uma moeda
-# Use %player% para o nome do player
-# Use %amount% para a quantidade de moedas
-message: "[Fulldev] Você recebeu %amount% moeda(s)!"
+# ============================================================
+# SISTEMA DE DROP DE MOEDAS
+# ============================================================
+coins-drop:
+  # Intervalo de tempo em minutos para dropar moedas automaticamente
+  # Cada player recebe 1 coin a cada X minutos
+  interval-minutes: 15
 
-# Mobs que podem dropar moedas
-# Deixe vazio para todos os mobs
-allowed-mobs:
-  - ZOMBIE
-  - CREEPER
-  - SKELETON
-  - SPIDER
-  - ENDERMAN
-  - BLAZE
-  - WITCH
-  - WITHER_SKELETON
-  - HUSK
-  - DROWNED
-  - PHANTOM
-  - ZOGLIN
+  # Quantidade de moedas por drop automático
+  coins-per-drop: 1
+
+  # Drop ao matar mobs
+  mob-drop:
+    enabled: true
+    # Chance de dropar moedas (0.0 a 1.0)
+    chance: 0.5
+    # Quantidade mínima de moedas
+    min-coins: 1
+    # Quantidade máxima de moedas
+    max-coins: 5
+    # Mobs que podem dropar moedas
+    allowed-mobs:
+      - ZOMBIE
+      - CREEPER
+      - SKELETON
+      - SPIDER
+      - ENDERMAN
+      - BLAZE
+      - WITCH
+      - WITHER_SKELETON
+      - HUSK
+      - DROWNED
+      - PHANTOM
+      - ZOGLIN
+
+# ============================================================
+# MENSAGENS
+# ============================================================
+messages:
+  # Mensagem ao receber moedas
+  coins-received: "§a[§6Fulldev§a] +§e%amount%§a moeda(s)! Total: §6%total%"
+
+  # Mensagem de milestone
+  coins-milestone: "§6[Fulldev] Parabéns! Você atingiu §e%total%§6 moedas!"
+
+  # Notificação de auto-reward
+  auto-reward: "§a[Fulldev] Você recebeu §e1 moeda§a automática!"
+
+# ============================================================
+# BANCO DE DADOS
+# ============================================================
+database:
+  # Tipo de banco: sqlite (padrão) ou mysql
+  type: sqlite
+
+  # SQLite (se type: sqlite)
+  sqlite:
+    filename: "fulldev-coins.db"
+
+  # MySQL (se type: mysql)
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "fulldev_coins"
+    username: "root"
+    password: ""
+
+# ============================================================
+# GUI - MENU DE COINS
+# ============================================================
+gui:
+  # Título do menu
+  title: "§6FulldevCoins"
+
+  # Tamanho do inventário (9, 18, 27, 36, 45, 54)
+  size: 45
+
+  # Cores dos itens
+  colors:
+    primary: "§6"      # Ouro
+    secondary: "§e"    # Amarelo
+    success: "§a"      # Verde
+    warning: "§c"      # Vermelho
+    info: "§b"         # Ciano
+
+# ============================================================
+# LOJA DE COINS
+# ============================================================
+shop:
+  enabled: true
+
+  # Items disponíveis para compra
+  items:
+    # Exemplo: Nome do item (id do minecraft:quantidade:preço em coins)
+    diamond:
+      id: "DIAMOND"
+      quantity: 1
+      price: 50
+      display-name: "§bDiamante"
+      lore:
+        - "§7Preço: §650 moedas"
+
+    emerald:
+      id: "EMERALD"
+      quantity: 1
+      price: 40
+      display-name: "§2Esmeralda"
+      lore:
+        - "§7Preço: §640 moedas"
+
+    gold-ingot:
+      id: "GOLD_INGOT"
+      quantity: 5
+      price: 30
+      display-name: "§6Barra de Ouro (x5)"
+      lore:
+        - "§7Preço: §630 moedas"
+
+    iron-ingot:
+      id: "IRON_INGOT"
+      quantity: 10
+      price: 20
+      display-name: "§7Barra de Ferro (x10)"
+      lore:
+        - "§7Preço: §620 moedas"
+
+# ============================================================
+# LINKS E URLs
+# ============================================================
+links:
+  discord: "https://discord.gg/seu-servidor"
+  website: "https://seu-website.com"
+  loja: "https://loja.seu-website.com"
+  icon-url: "https://seu-website.com/icon.png"
+
+# ============================================================
+# SISTEMA DE LEVEL (Progressão)
+# ============================================================
+levels:
+  enabled: true
+
+  # Recompensas por level
+  rewards:
+    # Level 5: 10 coins bonus
+    5:
+      coins: 10
+      message: "§6Você atingiu level 5! Ganhando 10 coins bonus!"
+
+    # Level 10: 25 coins bonus
+    10:
+      coins: 25
+      message: "§6Você atingiu level 10! Ganhando 25 coins bonus!"
+
+    # Level 25: 100 coins bonus
+    25:
+      coins: 100
+      message: "§6Você atingiu level 25! Ganhando 100 coins bonus!"
+
+# ============================================================
+# BOOSTER - Multiplicador de Coins
+# ============================================================
+booster:
+  enabled: true
+
+  # Booster padrão ao entrar
+  default-multiplier: 1.0
+
+  # Durações de booster (em minutos)
+  durations:
+    bronze: 30      # x1.25
+    silver: 60      # x1.5
+    gold: 120       # x2.0
+
+# ============================================================
+# NOTIFICAÇÕES E EVENTOS
+# ============================================================
+notifications:
+  # Notificar quando player acumula 100 moedas
+  milestones: [100, 500, 1000, 5000, 10000]
+
+  # Mostrar top players ao iniciar servidor
+  show-top-on-startup: true
+
+  # Atualizar top a cada X minutos
+  top-update-minutes: 30
+
+# ============================================================
+# PERMISSÕES
+# ============================================================
+permissions:
+  view-coins: "fulldevcoins.view"
+  claim-rewards: "fulldevcoins.claim"
+  use-shop: "fulldevcoins.shop"
+  admin: "fulldevcoins.admin"
+  booster: "fulldevcoins.booster"
+

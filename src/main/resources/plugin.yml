@@ -6,11 +6,16 @@ main: org.konpeki_estudios.FulldevCoinsPlugin
 
 permissions:
   fulldevcoins.admin:
-    description: Permissão para usar comandos do FulldevCoins
+    description: Permissão para usar comandos administrativos
     default: op
 
 commands:
+  coins:
+    description: Comando principal de coins
+    usage: /coins [help|info|loja|reload]
+    aliases: [coin, moedas]
+
   fulldevcoins:
-    description: Comando para gerenciar o plugin FulldevCoins
-    usage: /fulldevcoins <reload|info>
-    aliases: [coins]
+    description: Comando alternativo de coins
+    usage: /fulldevcoins [help|info|loja|reload]
+    aliases: [fd-coins]
