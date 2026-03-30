@@ -24,7 +24,6 @@ public class GUIListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        // Verificar se é um player
         if (!(event.getWhoClicked() instanceof Player)) {
             return;
         }
@@ -32,36 +31,50 @@ public class GUIListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         String title = event.getView().getTitle();
 
-        // GUI de FulldevCoins
-        if (title.equals("§6FulldevCoins")) {
+        // ============ GUI PRINCIPAL ============
+        if (title.equals("§6§l☆ FulldevCoins ☆")) {
             event.setCancelled(true);
-
             int slot = event.getRawSlot();
 
-            // Botão de loja (slot 29)
+            // Validar slot válido
+            if (slot < 0 || slot >= 54) return;
+
+            // Botão de Loja (slot 29)
             if (slot == 29) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
                 shopManager.openShop(player);
             }
 
-            // Botão de Discord (slot 33)
-            else if (slot == 33) {
+            // Botão de Discord (slot 31)
+            else if (slot == 31) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
                 String discordLink = plugin.getConfig().getString("links.discord", "https://discord.gg/seu-servidor");
-                player.sendMessage("§5Discord: §7" + discordLink);
+                player.sendMessage(" ");
+                player.sendMessage("§5§l【 DISCORD 】");
+                player.sendMessage("§7Clique para copiar: §a" + discordLink);
+                player.sendMessage(" ");
             }
 
-            // Botão de Website (slot 37)
-            else if (slot == 37) {
+            // Botão de Website (slot 33)
+            else if (slot == 33) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
                 String website = plugin.getConfig().getString("links.website", "https://seu-website.com");
-                player.sendMessage("§bWebsite: §7" + website);
+                player.sendMessage(" ");
+                player.sendMessage("§9§l【 WEBSITE 】");
+                player.sendMessage("§7Clique para copiar: §a" + website);
+                player.sendMessage(" ");
             }
 
-            // Botão de fechar (slot 44)
-            else if (slot == 44) {
+            // Botão de Fechar (slot 35)
+            else if (slot == 35) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 player.closeInventory();
+                player.sendMessage("§7Você fechou o menu de coins.");
             }
 
-            // Cabeça do player (slot 22) - atualizar
-            else if (slot == 22) {
+            // Cabeça do player (slot 10) - atualizar GUI
+            else if (slot == 10) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
                 DatabaseManager.PlayerData playerData = database.getOrCreatePlayer(player.getUniqueId(), player.getName());
                 if (playerData != null) {
                     CoinsGUI.openCoinsGUI(player, playerData.getCoins(), playerData.getLastLogin());
@@ -69,47 +82,51 @@ public class GUIListener implements Listener {
             }
         }
 
-        // GUI de Loja
-        else if (title.equals("§6Loja de Coins")) {
+        // ============ GUI DA LOJA ============
+        else if (title.equals("§6§l💰 LOJA DE COINS 💰")) {
             event.setCancelled(true);
-
             int slot = event.getRawSlot();
-            ItemStack clicked = event.getCurrentItem();
 
-            if (clicked == null || clicked.getType() == Material.BLACK_STAINED_GLASS_PANE) {
-                return;
-            }
+            if (slot < 0 || slot >= 54) return;
 
-            // Diamante (slot 11)
-            if (slot == 11) {
+            // Diamante (slot 29)
+            if (slot == 29) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
                 shopManager.buyItem(player, "Diamante", Material.DIAMOND, 50, 1);
-                shopManager.openShop(player); // Reabrir loja
             }
 
-            // Esmeralda (slot 13)
-            else if (slot == 13) {
+            // Esmeralda (slot 31)
+            else if (slot == 31) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
                 shopManager.buyItem(player, "Esmeralda", Material.EMERALD, 40, 1);
-                shopManager.openShop(player);
             }
 
-            // Barra de Ouro (slot 15)
-            else if (slot == 15) {
-                shopManager.buyItem(player, "Barra de Ouro (x5)", Material.GOLD_INGOT, 30, 5);
-                shopManager.openShop(player);
+            // Ouro (slot 33)
+            else if (slot == 33) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
+                shopManager.buyItem(player, "Barra de Ouro", Material.GOLD_INGOT, 30, 5);
             }
 
-            // Barra de Ferro (slot 20)
-            else if (slot == 20) {
-                shopManager.buyItem(player, "Barra de Ferro (x10)", Material.IRON_INGOT, 20, 10);
-                shopManager.openShop(player);
+            // Ferro (slot 35)
+            else if (slot == 35) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.2f);
+                shopManager.buyItem(player, "Barra de Ferro", Material.IRON_INGOT, 20, 10);
             }
 
-            // Botão de voltar (slot 26)
-            else if (slot == 26) {
+            // Botão Voltar (slot 47)
+            else if (slot == 47) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 DatabaseManager.PlayerData playerData = database.getOrCreatePlayer(player.getUniqueId(), player.getName());
                 if (playerData != null) {
                     CoinsGUI.openCoinsGUI(player, playerData.getCoins(), playerData.getLastLogin());
                 }
+            }
+
+            // Botão Fechar (slot 51)
+            else if (slot == 51) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+                player.closeInventory();
+                player.sendMessage("§7Você fechou a loja.");
             }
         }
     }

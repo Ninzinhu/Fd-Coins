@@ -19,30 +19,52 @@ public class CoinsGUI {
      * Abrir GUI de coins para o player
      */
     public static void openCoinsGUI(Player player, long coins, long lastLogin) {
-        Inventory gui = Bukkit.createInventory(null, 45, "§6FulldevCoins");
+        Inventory gui = Bukkit.createInventory(null, 54, "§6§l☆ FulldevCoins ☆");
 
-        // Preenchimento com vidro preto
-        for (int i = 0; i < 45; i++) {
+        // ============ LINHA 1: Barra decorativa ============
+        for (int i = 0; i < 9; i++) {
+            gui.setItem(i, createDecorativeBlock());
+        }
+
+        // ============ LINHA 2-3: Informações do Player ============
+        // Cabeça do player (slot 10)
+        gui.setItem(10, createPlayerHead(player));
+
+        // Info do player (slots 11-16)
+        gui.setItem(11, createInfoItem("§e§lMOEDAS", coins));
+        gui.setItem(12, createGoldBlock());
+        gui.setItem(13, createLevelItem(1)); // Implementar level depois
+        gui.setItem(14, createPlayTimeItem(lastLogin));
+        gui.setItem(15, createGoldBlock());
+        gui.setItem(16, createDecorativeBlock());
+
+        // Linha 3 - Decoração
+        for (int i = 18; i < 27; i++) {
+            if (i == 20 || i == 24) {
+                gui.setItem(i, createDecorativeBlock());
+            } else {
+                gui.setItem(i, createGlassPane());
+            }
+        }
+
+        // ============ LINHA 4: Botões de Ações ============
+        gui.setItem(29, createLoja());        // Loja
+        gui.setItem(30, createGoldBlock());   // Separador
+        gui.setItem(31, createDiscordButton());
+        gui.setItem(32, createGoldBlock());   // Separador
+        gui.setItem(33, createWebsiteButton());
+        gui.setItem(34, createGoldBlock());   // Separador
+        gui.setItem(35, createCloseButton());
+
+        // ============ LINHA 5: Decoração ============
+        for (int i = 36; i < 45; i++) {
             gui.setItem(i, createGlassPane());
         }
 
-        // Cabeça do player no centro (slot 22)
-        gui.setItem(22, createPlayerHead(player));
-
-        // Informações do player
-        gui.setItem(11, createInfoItem(player, coins, lastLogin));
-
-        // Botão de loja
-        gui.setItem(29, createShopButton());
-
-        // Botão de Discord
-        gui.setItem(33, createDiscordButton());
-
-        // Botão de Website
-        gui.setItem(37, createWebsiteButton());
-
-        // Botão de fechar
-        gui.setItem(44, createCloseButton());
+        // ============ LINHA 6: Barra decorativa final ============
+        for (int i = 45; i < 54; i++) {
+            gui.setItem(i, createDecorativeBlock());
+        }
 
         player.openInventory(gui);
     }
@@ -61,6 +83,32 @@ public class CoinsGUI {
     }
 
     /**
+     * Criar bloco decorativo
+     */
+    private static ItemStack createDecorativeBlock() {
+        ItemStack block = new ItemStack(Material.GOLD_BLOCK);
+        ItemMeta meta = block.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(" ");
+            block.setItemMeta(meta);
+        }
+        return block;
+    }
+
+    /**
+     * Criar bloco de ouro simples
+     */
+    private static ItemStack createGoldBlock() {
+        ItemStack block = new ItemStack(Material.GOLD_BLOCK);
+        ItemMeta meta = block.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(" ");
+            block.setItemMeta(meta);
+        }
+        return block;
+    }
+
+    /**
      * Criar cabeça do player
      */
     private static ItemStack createPlayerHead(Player player) {
@@ -69,12 +117,12 @@ public class CoinsGUI {
 
         if (meta != null) {
             meta.setOwningPlayer(player);
-            meta.setDisplayName("§6" + player.getName());
+            meta.setDisplayName("§e§l" + player.getName());
 
             List<String> lore = new ArrayList<>();
-            lore.add("§7UUID: §e" + player.getUniqueId().toString().substring(0, 8) + "...");
-            lore.add("");
+            lore.add(" ");
             lore.add("§7Clique para atualizar");
+            lore.add(" ");
 
             meta.setLore(lore);
             head.setItemMeta(meta);
@@ -84,26 +132,19 @@ public class CoinsGUI {
     }
 
     /**
-     * Criar item de informações do player
+     * Item de moedas
      */
-    private static ItemStack createInfoItem(Player player, long coins, long lastLogin) {
-        ItemStack info = new ItemStack(Material.GOLD_BLOCK);
+    private static ItemStack createInfoItem(String name, long coins) {
+        ItemStack info = new ItemStack(Material.GOLD_NUGGET);
         ItemMeta meta = info.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName("§6Informações do Player");
+            meta.setDisplayName(name);
 
             List<String> lore = new ArrayList<>();
-            lore.add("");
-            lore.add("§eMoedas: §6" + formatNumber(coins));
-            lore.add("");
-            lore.add("§eÚltimo Login: §7" + formatDate(lastLogin));
-            lore.add("");
-            lore.add("§7Ganhe moedas:");
-            lore.add("§7• Matando mobs");
-            lore.add("§7• Login automático (a cada 15 min)");
-            lore.add("");
-            lore.add("§eClique para abrir a loja!");
+            lore.add(" ");
+            lore.add("§6" + formatNumber(coins));
+            lore.add(" ");
 
             meta.setLore(lore);
             info.setItemMeta(meta);
@@ -113,31 +154,76 @@ public class CoinsGUI {
     }
 
     /**
-     * Criar botão de loja
+     * Item de level
      */
-    private static ItemStack createShopButton() {
-        ItemStack shop = new ItemStack(Material.EMERALD_BLOCK);
-        ItemMeta meta = shop.getItemMeta();
+    private static ItemStack createLevelItem(int level) {
+        ItemStack item = new ItemStack(Material.NETHER_STAR);
+        ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName("§aLoja de Coins");
+            meta.setDisplayName("§d§lLEVEL");
 
             List<String> lore = new ArrayList<>();
-            lore.add("");
-            lore.add("§7Troque seus coins por items!");
-            lore.add("");
-            lore.add("§e• Diamante - 50 moedas");
-            lore.add("§e• Esmeralda - 40 moedas");
-            lore.add("§e• Barra de Ouro - 30 moedas");
-            lore.add("§e• Barra de Ferro - 20 moedas");
-            lore.add("");
-            lore.add("§aClique para abrir!");
+            lore.add(" ");
+            lore.add("§d" + level);
+            lore.add(" ");
 
             meta.setLore(lore);
-            shop.setItemMeta(meta);
+            item.setItemMeta(meta);
         }
 
-        return shop;
+        return item;
+    }
+
+    /**
+     * Item de tempo de jogo
+     */
+    private static ItemStack createPlayTimeItem(long lastLogin) {
+        ItemStack item = new ItemStack(Material.CLOCK);
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta != null) {
+            meta.setDisplayName("§b§lÚLTIMO LOGIN");
+
+            List<String> lore = new ArrayList<>();
+            lore.add(" ");
+            lore.add("§b" + formatDate(lastLogin));
+            lore.add(" ");
+
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
+
+        return item;
+    }
+
+    /**
+     * Criar botão de loja
+     */
+    private static ItemStack createLoja() {
+        ItemStack loja = new ItemStack(Material.EMERALD_BLOCK);
+        ItemMeta meta = loja.getItemMeta();
+
+        if (meta != null) {
+            meta.setDisplayName("§a§l🏪 LOJA");
+
+            List<String> lore = new ArrayList<>();
+            lore.add(" ");
+            lore.add("§7Troque coins por items");
+            lore.add(" ");
+            lore.add("§e• Diamante - 50 moedas");
+            lore.add("§e• Esmeralda - 40 moedas");
+            lore.add("§e• Ouro - 30 moedas");
+            lore.add("§e• Ferro - 20 moedas");
+            lore.add(" ");
+            lore.add("§a⚡ CLIQUE PARA ABRIR ⚡");
+            lore.add(" ");
+
+            meta.setLore(lore);
+            loja.setItemMeta(meta);
+        }
+
+        return loja;
     }
 
     /**
@@ -148,14 +234,15 @@ public class CoinsGUI {
         ItemMeta meta = discord.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName("§5Discord");
+            meta.setDisplayName("§5§l💬 DISCORD");
 
             List<String> lore = new ArrayList<>();
-            lore.add("");
+            lore.add(" ");
             lore.add("§7Junte-se ao nosso servidor!");
             lore.add("§7discord.gg/seu-servidor");
-            lore.add("");
-            lore.add("§eClique para copiar o link");
+            lore.add(" ");
+            lore.add("§5⚡ CLIQUE PARA COPIAR ⚡");
+            lore.add(" ");
 
             meta.setLore(lore);
             discord.setItemMeta(meta);
@@ -172,14 +259,15 @@ public class CoinsGUI {
         ItemMeta meta = website.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName("§bWebsite");
+            meta.setDisplayName("§9§l🌐 WEBSITE");
 
             List<String> lore = new ArrayList<>();
-            lore.add("");
+            lore.add(" ");
             lore.add("§7Visite nosso website!");
             lore.add("§7www.seu-website.com");
-            lore.add("");
-            lore.add("§eClique para copiar o link");
+            lore.add(" ");
+            lore.add("§9⚡ CLIQUE PARA COPIAR ⚡");
+            lore.add(" ");
 
             meta.setLore(lore);
             website.setItemMeta(meta);
@@ -192,11 +280,18 @@ public class CoinsGUI {
      * Criar botão de fechar
      */
     private static ItemStack createCloseButton() {
-        ItemStack close = new ItemStack(Material.BARRIER);
+        ItemStack close = new ItemStack(Material.REDSTONE_BLOCK);
         ItemMeta meta = close.getItemMeta();
 
         if (meta != null) {
-            meta.setDisplayName("§cFechar");
+            meta.setDisplayName("§c§l✖ FECHAR");
+
+            List<String> lore = new ArrayList<>();
+            lore.add(" ");
+            lore.add("§7Clique para fechar");
+            lore.add(" ");
+
+            meta.setLore(lore);
             close.setItemMeta(meta);
         }
 

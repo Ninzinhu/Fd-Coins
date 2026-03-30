@@ -25,33 +25,54 @@ public class ShopManager {
      * Abrir loja de coins para o player
      */
     public void openShop(Player player) {
-        Inventory shop = Bukkit.createInventory(null, 27, "§6Loja de Coins");
+        Inventory shop = Bukkit.createInventory(null, 54, "§6§l💰 LOJA DE COINS 💰");
 
-        // Vidro preto para preenchimento
-        for (int i = 0; i < 27; i++) {
+        // ============ LINHA 1: Barra decorativa ============
+        for (int i = 0; i < 9; i++) {
+            shop.setItem(i, createDecorativeBlock());
+        }
+
+        // ============ LINHA 2-3: Info do player + Saldo ============
+        shop.setItem(10, createGoldBlock());
+        shop.setItem(11, createBalanceItem(player));
+        shop.setItem(12, createGoldBlock());
+        shop.setItem(13, createGoldBlock());
+        shop.setItem(14, createGoldBlock());
+        shop.setItem(15, createGoldBlock());
+        shop.setItem(16, createGoldBlock());
+        shop.setItem(17, createGoldBlock());
+
+        // Linha vazia
+        for (int i = 18; i < 27; i++) {
             shop.setItem(i, createGlassPane());
         }
 
-        // Item 1: Diamante
-        shop.setItem(11, createShopItem(Material.DIAMOND, "§bDiamante",
-            new String[]{"§7Preço: §650 moedas", "", "§eClique para comprar!"}));
+        // ============ LINHA 4: Items da Loja ============
+        shop.setItem(29, createShopItemStack(Material.DIAMOND, "§b§lDIAMANTE", 1, 50));
+        shop.setItem(31, createShopItemStack(Material.EMERALD, "§2§lESMERALDA", 1, 40));
+        shop.setItem(33, createShopItemStack(Material.GOLD_INGOT, "§6§lOURO", 5, 30));
+        shop.setItem(35, createShopItemStack(Material.IRON_INGOT, "§7§lFERRO", 10, 20));
 
-        // Item 2: Esmeralda
-        shop.setItem(13, createShopItem(Material.EMERALD, "§2Esmeralda",
-            new String[]{"§7Preço: §640 moedas", "", "§eClique para comprar!"}));
+        // Separadores
+        shop.setItem(30, createGoldBlock());
+        shop.setItem(32, createGoldBlock());
+        shop.setItem(34, createGoldBlock());
 
-        // Item 3: Barra de Ouro
-        shop.setItem(15, createShopItem(Material.GOLD_INGOT, "§6Barra de Ouro (x5)",
-            new String[]{"§7Preço: §630 moedas", "", "§eClique para comprar!"}));
+        // ============ LINHA 5: Decoração ============
+        for (int i = 36; i < 45; i++) {
+            shop.setItem(i, createGlassPane());
+        }
 
-        // Item 4: Barra de Ferro
-        ItemStack iron = createShopItem(Material.IRON_INGOT, "§7Barra de Ferro (x10)",
-            new String[]{"§7Preço: §620 moedas", "", "§eClique para comprar!"});
-        iron.setAmount(10);
-        shop.setItem(20, iron);
-
-        // Botão de voltar
-        shop.setItem(26, createBackButton());
+        // ============ LINHA 6: Botões de volta e info ============
+        shop.setItem(45, createDecorativeBlock());
+        shop.setItem(46, createGoldBlock());
+        shop.setItem(47, createBackButton());
+        shop.setItem(48, createGoldBlock());
+        shop.setItem(49, createInfoButton());
+        shop.setItem(50, createGoldBlock());
+        shop.setItem(51, createCloseButton());
+        shop.setItem(52, createGoldBlock());
+        shop.setItem(53, createDecorativeBlock());
 
         player.openInventory(shop);
     }
@@ -65,6 +86,7 @@ public class ShopManager {
         if (playerCoins < price) {
             player.sendMessage("§c❌ Você não tem moedas suficientes!");
             player.sendMessage("§cVocê precisa de §6" + (price - playerCoins) + "§c moedas a mais.");
+            player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 0.5f);
             return;
         }
 
@@ -81,25 +103,31 @@ public class ShopManager {
         // Notificar sucesso
         player.sendMessage("§a✅ Compra realizada com sucesso!");
         player.sendMessage("§aVocê comprou: §e" + itemName + " §apor §6" + price + "§a moedas");
+        player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
+
+        // Reabrir loja
+        openShop(player);
     }
 
     /**
-     * Criar item de loja
+     * Criar item de shop com preço
      */
-    private ItemStack createShopItem(Material material, String name, String[] lore) {
-        ItemStack item = new ItemStack(material);
+    private ItemStack createShopItemStack(Material material, String name, int quantity, long price) {
+        ItemStack item = new ItemStack(material, quantity);
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
             meta.setDisplayName(name);
 
-            List<String> loreList = new ArrayList<>();
-            loreList.add("");
-            for (String line : lore) {
-                loreList.add(line);
-            }
+            List<String> lore = new ArrayList<>();
+            lore.add(" ");
+            lore.add("§7Quantidade: §e" + quantity);
+            lore.add("§7Preço: §6" + price + " moedas");
+            lore.add(" ");
+            lore.add("§a⚡ CLIQUE PARA COMPRAR ⚡");
+            lore.add(" ");
 
-            meta.setLore(loreList);
+            meta.setLore(lore);
             item.setItemMeta(meta);
         }
 
@@ -107,7 +135,123 @@ public class ShopManager {
     }
 
     /**
-     * Criar vidro preto
+     * Item de saldo
+     */
+    private ItemStack createBalanceItem(Player player) {
+        long coins = database.getCoins(player.getUniqueId());
+        ItemStack item = new ItemStack(Material.GOLD_NUGGET);
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta != null) {
+            meta.setDisplayName("§6§lSEU SALDO");
+
+            List<String> lore = new ArrayList<>();
+            lore.add(" ");
+            lore.add("§e" + formatNumber(coins) + " moedas");
+            lore.add(" ");
+
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
+
+        return item;
+    }
+
+    /**
+     * Botão de informações
+     */
+    private ItemStack createInfoButton() {
+        ItemStack item = new ItemStack(Material.BOOK);
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta != null) {
+            meta.setDisplayName("§b§l📖 INFORMAÇÕES");
+
+            List<String> lore = new ArrayList<>();
+            lore.add(" ");
+            lore.add("§7Clique nos items para");
+            lore.add("§7comprar com suas moedas!");
+            lore.add(" ");
+
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
+
+        return item;
+    }
+
+    /**
+     * Botão de volta
+     */
+    private ItemStack createBackButton() {
+        ItemStack back = new ItemStack(Material.ARROW);
+        ItemMeta meta = back.getItemMeta();
+
+        if (meta != null) {
+            meta.setDisplayName("§c§l← VOLTAR");
+
+            List<String> lore = new ArrayList<>();
+            lore.add(" ");
+            lore.add("§7Voltar ao menu principal");
+            lore.add(" ");
+
+            meta.setLore(lore);
+            back.setItemMeta(meta);
+        }
+
+        return back;
+    }
+
+    /**
+     * Botão de fechar
+     */
+    private ItemStack createCloseButton() {
+        ItemStack close = new ItemStack(Material.REDSTONE_BLOCK);
+        ItemMeta meta = close.getItemMeta();
+
+        if (meta != null) {
+            meta.setDisplayName("§c§l✖ FECHAR");
+
+            List<String> lore = new ArrayList<>();
+            lore.add(" ");
+            lore.add("§7Fechar a loja");
+            lore.add(" ");
+
+            meta.setLore(lore);
+            close.setItemMeta(meta);
+        }
+
+        return close;
+    }
+
+    /**
+     * Bloco decorativo
+     */
+    private ItemStack createDecorativeBlock() {
+        ItemStack block = new ItemStack(Material.GOLD_BLOCK);
+        ItemMeta meta = block.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(" ");
+            block.setItemMeta(meta);
+        }
+        return block;
+    }
+
+    /**
+     * Bloco de ouro
+     */
+    private ItemStack createGoldBlock() {
+        ItemStack block = new ItemStack(Material.GOLD_BLOCK);
+        ItemMeta meta = block.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(" ");
+            block.setItemMeta(meta);
+        }
+        return block;
+    }
+
+    /**
+     * Vidro preto
      */
     private ItemStack createGlassPane() {
         ItemStack glass = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
@@ -120,17 +264,9 @@ public class ShopManager {
     }
 
     /**
-     * Criar botão de voltar
+     * Formatar números
      */
-    private ItemStack createBackButton() {
-        ItemStack back = new ItemStack(Material.ARROW);
-        ItemMeta meta = back.getItemMeta();
-
-        if (meta != null) {
-            meta.setDisplayName("§cVoltar");
-            back.setItemMeta(meta);
-        }
-
-        return back;
+    private String formatNumber(long number) {
+        return String.format("%,d", number).replace(",", ".");
     }
 }
