@@ -115,7 +115,7 @@ public class GUIListener implements Listener {
             else if (slot == 26) {
                 DatabaseManager.PlayerData playerData = database.getOrCreatePlayer(player.getUniqueId(), player.getName());
                 if (playerData != null) {
-                    CoinsGUI.openCoinsGUI(player, playerData.getCoins(), playerData.getLastLogin());
+                    CoinsGUI.openCoinsGUI(player, playerData.getCoins(), playerData.getLastLogin(), playerData.getJoinDate());
                 }
             }
         }

@@ -78,7 +78,8 @@ public class DatabaseManager {
                             rs.getLong("coins"),
                             rs.getLong("last_login"),
                             rs.getLong("total_coins_earned"),
-                            rs.getInt("level")
+                            rs.getInt("level"),
+                            rs.getLong("created_at")
                         );
                     }
                 }
@@ -96,7 +97,7 @@ public class DatabaseManager {
                 pstmt.executeUpdate();
             }
 
-            return new PlayerData(uuid, name, 0, System.currentTimeMillis(), 0, 1);
+            return new PlayerData(uuid, name, 0, System.currentTimeMillis(), 0, 1, System.currentTimeMillis());
 
         } catch (SQLException e) {
             logger.severe("❌ Erro ao obter/criar player: " + e.getMessage());
@@ -233,6 +234,7 @@ public class DatabaseManager {
         private long lastLogin;
         private long totalCoinsEarned;
         private int level;
+        private long joinDate;
 
         public PlayerData(UUID uuid, String name, long coins, long lastLogin, long totalCoinsEarned, int level) {
             this.uuid = uuid;
@@ -241,6 +243,17 @@ public class DatabaseManager {
             this.lastLogin = lastLogin;
             this.totalCoinsEarned = totalCoinsEarned;
             this.level = level;
+            this.joinDate = System.currentTimeMillis();
+        }
+
+        public PlayerData(UUID uuid, String name, long coins, long lastLogin, long totalCoinsEarned, int level, long joinDate) {
+            this.uuid = uuid;
+            this.name = name;
+            this.coins = coins;
+            this.lastLogin = lastLogin;
+            this.totalCoinsEarned = totalCoinsEarned;
+            this.level = level;
+            this.joinDate = joinDate;
         }
 
         public UUID getUuid() { return uuid; }
@@ -249,5 +262,6 @@ public class DatabaseManager {
         public long getLastLogin() { return lastLogin; }
         public long getTotalCoinsEarned() { return totalCoinsEarned; }
         public int getLevel() { return level; }
+        public long getJoinDate() { return joinDate; }
     }
 }

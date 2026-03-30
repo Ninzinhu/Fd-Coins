@@ -108,7 +108,7 @@ public class CoinsGUI {
     }
 
     private static ItemStack createMemberSinceDisplay(long joinDate) {
-        ItemStack item = new ItemStack(Material.CALENDAR);
+        ItemStack item = new ItemStack(Material.CLOCK);
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
