@@ -1,0 +1,58 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check documentation
+      run: |
+        echo "## 📚 Verificação de Documentação" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Arquivos de Documentação" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        FILES=("README.md" "INSTALACAO.md" "CUSTOMIZACAO.md" "FAQ.md" "RESUMO.md")
+        
+        for file in "${FILES[@]}"; do
+          if [ -f "$file" ]; then
+            LINES=$(wc -l < "$file")
+            echo "✅ $file ($LINES linhas)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ $file (não encontrado)" >> $GITHUB_STEP_SUMMARY
+          fi
+        done
+
+    - name: Generate JavaDoc
+      run: |
+        mvn javadoc:javadoc || true
+
+    - name: Upload JavaDoc
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: javadoc
+        path: target/site/apidocs/
+      continue-on-error: true
+
+    - name: Validate Markdown
+      run: |
+        # Verificar se arquivos markdown existem e são válidos
+        for file in README.md INSTALACAO.md CUSTOMIZACAO.md FAQ.md RESUMO.md; do
+          if [ -f "$file" ]; then
+            echo "✅ Validando $file..."
+            # Verificar sintaxe básica
+            if grep -E "^#+ " "$file" > /dev/null; then
+              echo "  ✓ Headers encontrados"
+            fi
+          fi
+        done
