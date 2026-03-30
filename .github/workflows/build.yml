@@ -70,11 +70,12 @@ jobs:
     - name: Create git tag
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
       uses: actions/github-script@v7
+      continue-on-error: true
       with:
         script: |
           const tag = '${{ steps.version.outputs.new-tag }}';
           try {
-            github.rest.git.createRef({
+            await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: `refs/tags/${tag}`,
@@ -82,7 +83,11 @@ jobs:
             });
             console.log(`✅ Tag criada: ${tag}`);
           } catch (error) {
-            console.log(`⚠️ Tag já existe: ${tag}`);
+            if (error.status === 422) {
+              console.log(`⚠️ Tag já existe: ${tag}`);
+            } else {
+              throw error;
+            }
           }
 
     - name: Create GitHub Release
